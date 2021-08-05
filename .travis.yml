@@ -1,0 +1,19 @@
+language: java
+jdk:
+- openjdk14
+services:
+- postgresql
+before_install:
+- psql -c 'create database fullstack_auth;' -U postgres
+sudo: false
+install: true
+after_success:
+- bash <(curl -s https://codecov.io/bash)
+notifications:
+  email:
+    on_success: never
+    on_failure: always
+env:
+  global:
+  - CODECOV_TOKEN="e7be2008-a07f-406a-af20-8370b4da54a5"
+
