@@ -5,6 +5,7 @@ services:
 - postgresql
 before_install:
 - psql -c 'create database fullstack_auth;' -U postgres
+- psql -c 'create database chat;' -U postgres
 sudo: false
 install: true
 after_success:
