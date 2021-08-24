@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.job4j.chat.ChatApplication;
 import ru.job4j.chat.domain.Person;
@@ -36,6 +37,7 @@ public class PersonControllerTest {
     private PersonController persons;
 
     @Test
+    @WithMockUser
     public void whenFindAll() throws Exception {
         var person1 = Person.of(1, "user", "pass");
         var person2 = Person.of(2, "admin", "admin");
@@ -55,6 +57,7 @@ public class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void whenAdd() throws Exception {
         var person = Person.of(1, "user2", "pass");
         when(persons.create(any(Person.class))).thenReturn(
@@ -71,6 +74,7 @@ public class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void whenUpdate() throws Exception {
         when(persons.update(any(Person.class))).thenReturn(new ResponseEntity<>(HttpStatus.OK));
         mockMvc.perform(put("/persons/")
@@ -85,6 +89,7 @@ public class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void whenFindById() throws Exception {
         var person = Person.of(1, "user", "pass");
         when(persons.findById(anyInt())).thenReturn(new ResponseEntity<>(person, HttpStatus.OK));
@@ -98,6 +103,7 @@ public class PersonControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void whenDelete() throws Exception {
         when(persons.delete(anyInt())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
         mockMvc.perform(delete("/persons/2"))

@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.job4j.chat.ChatApplication;
 import ru.job4j.chat.domain.Role;
@@ -36,6 +37,7 @@ public class RoleControllerTest {
     private RoleController roles;
 
     @Test
+    @WithMockUser
     public void whenFindAll() throws Exception {
         var role1 = Role.of(1, "ROLE_USER");
         var role2 = Role.of(2, "ROLE_ADMIN");
@@ -53,6 +55,7 @@ public class RoleControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void whenAdd() throws Exception {
         var role3 = Role.of(3, "ROLE_ADMIN2");
         when(roles.create(any(Role.class))).thenReturn(new ResponseEntity<>(role3, HttpStatus.OK));
@@ -67,6 +70,7 @@ public class RoleControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void whenUpdate() throws Exception {
         when(roles.update(any(Role.class))).thenReturn(new ResponseEntity<>(HttpStatus.OK));
         mockMvc.perform(put("/roles/")
@@ -80,6 +84,7 @@ public class RoleControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void whenFindById() throws Exception {
         var role = Role.of(1, "ROLE_USER");
         when(roles.findById(anyInt())).thenReturn(new ResponseEntity<>(role, HttpStatus.OK));
@@ -92,6 +97,7 @@ public class RoleControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void whenDelete() throws Exception {
         when(roles.delete(anyInt())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
         mockMvc.perform(delete("/roles/2"))
