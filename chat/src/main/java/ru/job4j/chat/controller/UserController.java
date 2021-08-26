@@ -24,6 +24,9 @@ public class UserController {
 
     @PostMapping("/sign-up")
     public void signUp(@RequestBody Person user) {
+        if (user.getLogin().isEmpty() || user.getPassword().isEmpty()) {
+            throw new NullPointerException("Empty login or password");
+        }
         var person = Person.of(user.getId(), user.getLogin(),
                 encoder.encode(user.getPassword()));
         users.save(person);

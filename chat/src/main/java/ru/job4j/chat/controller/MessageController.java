@@ -3,6 +3,7 @@ package ru.job4j.chat.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.chat.domain.Message;
 import ru.job4j.chat.repository.MessageRepository;
 
@@ -28,29 +29,40 @@ public class MessageController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Message> findById(@PathVariable int id) {
-        return this.messages.existsById(id)
-                ? new ResponseEntity<>(this.messages.findById(id).get(), HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        var message = this.messages.findById(id);
+        if (message.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Message not found");
+        }
+        return new ResponseEntity<>(message.orElse(new Message()), HttpStatus.OK);
     }
 
     @PostMapping("/")
     public ResponseEntity<Message> create(@RequestBody Message message) {
-        return message != null
-                ? new ResponseEntity<>(this.messages.save(message), HttpStatus.CREATED)
-                : new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (message.getText().isEmpty()) {
+            throw new NullPointerException("Empty message");
+        }
+        return new ResponseEntity<>(
+                this.messages.save(message), HttpStatus.CREATED);
     }
 
     @PutMapping("/")
     public ResponseEntity<Void> update(@RequestBody Message message) {
+        if (message.getText().isEmpty()) {
+            throw new NullPointerException("Empty message");
+        }
         this.messages.save(message);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
-        Message m = new Message();
-        m.setId(id);
-        this.messages.delete(m);
+        if (id == 0) {
+            throw new NullPointerException("Empty id");
+        }
+        var message = new Message();
+        message.setId(id);
+        this.messages.delete(message);
         return ResponseEntity.ok().build();
     }
 }
