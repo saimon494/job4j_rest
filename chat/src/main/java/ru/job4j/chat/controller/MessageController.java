@@ -1,6 +1,7 @@
 package ru.job4j.chat.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -34,7 +35,9 @@ public class MessageController {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Message not found");
         }
-        return new ResponseEntity<>(message.orElse(new Message()), HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(message.get());
     }
 
     @PostMapping("/")
@@ -42,17 +45,19 @@ public class MessageController {
         if (message.getText().isEmpty()) {
             throw new NullPointerException("Empty message");
         }
-        return new ResponseEntity<>(
-                this.messages.save(message), HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(this.messages.save(message));
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Message message) {
+    public ResponseEntity<Message> update(@RequestBody Message message) {
         if (message.getText().isEmpty()) {
             throw new NullPointerException("Empty message");
         }
-        this.messages.save(message);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(this.messages.save(message));
     }
 
     @DeleteMapping("/{id}")
