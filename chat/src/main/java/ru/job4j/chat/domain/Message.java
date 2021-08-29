@@ -72,6 +72,10 @@ public class Message {
         return time;
     }
 
+    public void setTime() {
+        this.time = new Timestamp(System.currentTimeMillis());
+    }
+
     @Override
     public String toString() {
         return "Message{"

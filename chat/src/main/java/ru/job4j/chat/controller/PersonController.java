@@ -10,9 +10,11 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.chat.domain.Person;
 import ru.job4j.chat.handlers.IllegalPasswordException;
 import ru.job4j.chat.repository.PersonRepository;
+import ru.job4j.chat.service.PatchService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -93,5 +95,17 @@ public class PersonController {
             put("type", e.getClass());
         }}));
         LOGGER.error(e.getLocalizedMessage());
+    }
+
+    @PatchMapping("/")
+    public Person patch(@RequestBody Person person)
+            throws InvocationTargetException, IllegalAccessException {
+        var newPerson = persons.findById(person.getId());
+        if (newPerson.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        var patchService = new PatchService<Person>();
+        persons.save(patchService.getPatch(newPerson.get(), person));
+        return newPerson.get();
     }
 }

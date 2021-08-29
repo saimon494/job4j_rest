@@ -10,7 +10,9 @@ import ru.job4j.chat.domain.Room;
 import ru.job4j.chat.repository.MessageRepository;
 import ru.job4j.chat.repository.PersonRepository;
 import ru.job4j.chat.repository.RoomRepository;
+import ru.job4j.chat.service.PatchService;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -115,5 +117,17 @@ public class RoomController {
         message.setId(mid);
         this.messages.delete(message);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/")
+    public Room patch(@RequestBody Room room)
+            throws InvocationTargetException, IllegalAccessException {
+        var newRoom = rooms.findById(room.getId());
+        if (newRoom.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        var patchService = new PatchService<Room>();
+        rooms.save(patchService.getPatch(newRoom.get(), room));
+        return newRoom.get();
     }
 }
