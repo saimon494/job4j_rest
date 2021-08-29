@@ -1,6 +1,10 @@
 package ru.job4j.chat.domain;
 
+import ru.job4j.chat.Operation;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Entity
@@ -9,8 +13,14 @@ public class Room {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull(message = "Id must be non null", groups = {
+            Operation.OnDelete.class, Operation.OnUpdate.class
+    })
     private int id;
 
+    @NotBlank(message = "Name must be not empty", groups = {
+            Operation.OnCreate.class, Operation.OnUpdate.class
+    })
     private String name;
 
     public static Room of(String name) {

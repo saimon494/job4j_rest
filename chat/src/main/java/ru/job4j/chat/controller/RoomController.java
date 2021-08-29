@@ -3,8 +3,10 @@ package ru.job4j.chat.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.job4j.chat.Operation;
 import ru.job4j.chat.domain.Message;
 import ru.job4j.chat.domain.Room;
 import ru.job4j.chat.repository.MessageRepository;
@@ -12,6 +14,7 @@ import ru.job4j.chat.repository.PersonRepository;
 import ru.job4j.chat.repository.RoomRepository;
 import ru.job4j.chat.service.PatchService;
 
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,7 +57,8 @@ public class RoomController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Room> create(@RequestBody Room room) {
+    @Validated(Operation.OnCreate.class)
+    public ResponseEntity<Room> create(@Valid @RequestBody Room room) {
         if (room.getName().isEmpty()) {
             throw new NullPointerException("Empty room");
         }
@@ -63,7 +67,8 @@ public class RoomController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Room room) {
+    @Validated(Operation.OnUpdate.class)
+    public ResponseEntity<Void> update(@Valid @RequestBody Room room) {
         if (room.getName().isEmpty()) {
             throw new NullPointerException("Empty room");
         }
@@ -72,7 +77,8 @@ public class RoomController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
+    @Validated(Operation.OnDelete.class)
+    public ResponseEntity<Void> delete(@Valid @PathVariable int id) {
         if (id == 0) {
             throw new NullPointerException("Empty id");
         }

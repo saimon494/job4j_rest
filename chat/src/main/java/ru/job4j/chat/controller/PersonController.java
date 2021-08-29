@@ -5,14 +5,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.job4j.chat.Operation;
 import ru.job4j.chat.domain.Person;
 import ru.job4j.chat.handlers.IllegalPasswordException;
 import ru.job4j.chat.repository.PersonRepository;
 import ru.job4j.chat.service.PatchService;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -53,7 +56,8 @@ public class PersonController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Person> create(@RequestBody Person person)
+    @Validated(Operation.OnCreate.class)
+    public ResponseEntity<Person> create(@Valid @RequestBody Person person)
             throws IllegalPasswordException {
         if (person.getLogin().isEmpty() || person.getPassword().isEmpty()) {
             throw new NullPointerException("Empty login or password");
@@ -67,7 +71,8 @@ public class PersonController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Person person) {
+    @Validated(Operation.OnUpdate.class)
+    public ResponseEntity<Void> update(@Valid @RequestBody Person person) {
         if (person.getLogin() == null || person.getPassword() == null) {
             throw new NullPointerException("Empty login or password");
         }
@@ -76,7 +81,8 @@ public class PersonController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
+    @Validated(Operation.OnDelete.class)
+    public ResponseEntity<Void> delete(@Valid @PathVariable int id) {
         if (id == 0) {
             throw new NullPointerException("Empty id");
         }
